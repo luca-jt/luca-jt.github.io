@@ -1,0 +1,136 @@
+---
+layout: default
+title: Event Listener in Rust
+---
+
+<h1>Crafting dynamically dispatched Event Listeners in Rust</h1>
+
+<p>
+While working on the <a href="../../projects/game-engine">Leafy Engine</a> I came across the problem of implementing an event system that would enable me to do the following:
+</p>
+<ul>
+<li>handle events from the OS in an efficient way</li>
+<li>add an arbitrary number of additional event types</li>
+<li>add an arbitrary number of corresponing event listeners using dynamic dispatch</li>
+<li>supporting event functions along side simple event listener structs</li>
+</ul>
+<p>
+I was trying to find some useful information about this topic online, but was quite disappointed to find out that there wasn't really anything helpful. This is why I decided to showcase the solution to this problem that I eventually came up with and tell you a bit about the little but anoying quirks that you will come across during this process. It is totally possible that there is a nicer way to accomplish this out there that I have not yet seen, but I still think this will be helpful to some people.
+</p>
+<p>
+This article will focus on the broad priciple of using dynamic dispatch in this scenario and not implementation details to my engine. This way, I hope to make this as widely applicable and helpful as possible to most people.
+</p>
+<p>
+<b>DISCLAIMER:</b><br>
+There are arguments to be made against using this type of architecture in the first place. For example, most hyper-generalized systems solve the wrong kind of problem and only avoid quirks people using Rust will inevitably run into at some point. Other <a href="https://loglog.games/blog/leaving-rust-gamedev/">articles</a> discuss this in depth. The reason I am still doing this is because I was specifically interested in how one might solve a problem like this without resorting to unsafe Rust. The project I was engaged in at the time of writing this was a pure learning experience for me. I think the existence of this article is still a net positive.
+</p>
+
+<h2>The Naive Approach</h2>
+<p>
+The first thing that probably comes to mind is storing the event listeners in a HashMap based on the event type, and then iterate over all the stored listeners every time an event gets triggered. This however will not allow for an arbitrary number of different events and listeners <i>that are unknown at the time of implementation of the event system</i>. If you don't need this generic functionality, you might not need all of this. Espacially when you have a background in a language like C or C++, you might think of using type erasure and storing pointers to the event listeners in the hash table. You would then need some kind of runtime type information to correctly cast the pointers to their respective listener type. You could also resort to some meta-programming, but that is really a pain in the butt when using Rust.
+</p>
+<p>
+Luckily, there already is something in the standard library that seems to be the perfect fit for this task: the <em>std::any</em> module. It provides the <em>Any</em> trait, which can be used to get a <em>TypeId</em> of an enum or struct and downcast to a type that was originally used to create the <em>Any</em> trait object. Downcasting this way checks the TypeId's and only allows for valid casts. Trait objects are using the <em>dyn</em> keyword and require being stored in a container like a <em>Box</em> as they don't have a size known at compile time. More information on this in the <a href="https://doc.rust-lang.org/std/any/index.html">Docs</a>.
+</p>
+<pre class="rust"><code>// this is how you might use the Any trait
+fn main() {
+    let value: i32 = 1;
+    let boxed: Box&lt;dyn Any&gt; = Box::new(value);
+
+    assert_ne!(value.type_id(), boxed.type_id()); // this will yield the TypeId of the container, not the value
+    assert_eq!(value.type_id(), (&*boxed).type_id()); // you have to do this to get the &dyn Any
+
+    let converted = *boxed.downcast_ref::&lt;i32&gt;().unwrap(); // the downcasting works because Box&lt;T&gt; implements Deref&lt;T&gt;
+    assert_eq!(value, converted);
+}
+</code></pre>
+<p>
+Doing this in Rust however without using unsafe Rust (we are not using unsafe Rust in this article) is not trivial and also still leaves some problems unresolved:<br>
+First, all of this introduces a whole lot of potential lifetime issues and you want the listeners to be borrowed mutably when calling their method that is called on an event trigger. Second, you dont know the specific types of the listeners. That means that we will have to use trait objects and cast to an intermediate level in the trait hierarchy. This is probably the biggest problem, as at the time of me writing this article <a href="https://github.com/rust-lang/rust/issues/65991">trait upcasting</a> is still an unstable feature, and even if it was stable, we could not use it, because we have a generic type parameter associated with the trait object (the event type) and we can not store that in a map generically.
+</p>
+<p>
+This leads us to the following: We want to store trait objects dynamically in regards to the event type that they are listeners for. We also want to do that without knowing the specific type of the listener and casting to the correct type generically.
+</p>
+
+<h2>RefCell Hell</h2>
+<p>
+People are typically advised to not excessively rely on using something like RefCell, because you are essentially avoiding the rust borrowing rules and only crash at runtime, if they are actually violated. Especially people who are new to Rust and not used to the borrow checker might fall into that pit quickly. There are some cases though, where your software architecture requires its use or heavily asks for it - and then its fine to use. The only rule of thumb I want to give you is to always question twice, whether or not you really need one. It's quite similar to the use of <em>dyn Any</em> in that regard.
+</p>
+<p>
+In our case, we will not get around using an <em>Rc&lt;RefCell&gt;</em>. We need to store references to the event listeners inside the event system and also be able to borrow them mutably on demand. Fortunately, <em>Rc</em> is already a smart pointer that allows us to store trait objects. We can then use weak references to them in order to not keep objects artificially alive.
+</p>
+
+<h2>The Any Problem</h2>
+<p>
+As already shown in the code snippet earlier, the downcasting only works if the TypeId's match the type we want to cast to. We want to cast to a trait object that is not of type <em>Any</em>, but specific to the event listener. If we also want to use the downcasting logic of <em>Any</em>, that requires for the listener object to be first cast to our trait object and then to another trait object of type <em>Any</em>. This is necessary to get the TypeId hashes to match correctly and to insert the <a href="https://en.wikipedia.org/wiki/Virtual_method_table">vtable</a> pointer into the trait object. That means that we have to nest two trait objects which means we have to use two different nested smart pointers and live with the double pointer indirection when accessing the underlying listener. We will probably not have a crazy amount of listeners, so the added performance hit is probably not a big deal.
+</p>
+<p>
+You might think: well, why can't i just use something like <em>RefMut::map</em> for the trait casting and save one of the pointers? The reason for that is that in the end you will end up not being able to cast to a trait object because it is not <em>Sized</em>. I ended up spending quite some time figuring out a way around this issue. I will save you this time and get straight to the solution.
+</p>
+
+<h2>Putting it all together</h2>
+<p>
+The base of our event system is the storage of out event listeners. Until now I didn't mention the function events. For this we can just use funcition pointers with the correct argument event type. To use the same logic with the <em>Any</em> trait in this case, we can just wrap the pointer inside a struct. The keys of both HashMaps are the TypeId's of the events that we want to listen for.
+</p>
+<pre class="rust"><code>// system managing the events
+struct EventSystem {
+    listeners: HashMap&lt;TypeId, Vec&lt;Box&lt;dyn Any&gt;&gt;&gt;,
+    functions: HashMap&lt;TypeId, Vec&lt;Box&lt;dyn Any&gt;&gt;&gt;,
+}
+</code></pre>
+<p>
+We will also need the trait we already dicussed and the wrapper for the funtion pointers.
+</p>
+<pre class="rust"><code>// trait every event listener has to implement
+trait EventListener&lt;T: Any&gt; {
+    fn on_event(&mut self, event: &T);
+}
+
+// wrapper for the function pointer
+struct EventFunction&lt;T: Any&gt; {
+    f: fn(&T),
+}
+</code></pre>
+<p>
+Now, to add new event listeners we first need to have a struct that implements the trait stored inside an Rc&lt;RefCell&gt;. We can then add them to our system and trigger events the following way:
+</p>
+<pre class="rust"><code>impl EventSystem {
+    // adds an event listener struct to the system
+    fn add_listener&lt;T: Any&gt;(&mut self, handler: &Rc&lt;RefCell&lt;impl EventListener&lt;T&gt; + 'static&gt;&gt;) {
+        let listeners = self.listeners.entry(TypeId::of::&lt;T&gt;()).or_default();
+        listeners.push(Box::new(Rc::downgrade(handler) as Weak&lt;RefCell&lt;dyn EventListener&lt;T&gt;&gt;&gt;));
+    }
+
+    // adds an event function to the system
+    fn add_function&lt;T: Any&gt;(&mut self, function: fn(&T)) {
+        let wrapper = EventFunction { f: modifier };
+        let functions = self.functions.entry(TypeId::of::&lt;T&gt;()).or_default();
+        functions.push(Box::new(wrapper));
+    }
+
+    // trigger an event and call all relevant functions/listeners
+    fn trigger&lt;T: Any&gt;(&self, event: T) {
+        if let Some(handlers) = self.listeners.get(&TypeId::of::&lt;T&gt;()) {
+            for handler in handlers {
+                let casted_handler = handler
+                    .downcast_ref::&lt;Weak&lt;RefCell&lt;dyn EventObserver&lt;T&gt;&gt;&gt;&gt;()
+                    .unwrap();
+                if let Some(handler_rc) = casted_handler.upgrade() {
+                    let mut handler_ref = handler_rc.borrow_mut();
+                    handler_ref.on_event(&event);
+                }
+            }
+        }
+        if let Some(modifiers) = self.modifiers.get(&TypeId::of::&lt;T&gt;()) {
+            for modifier in modifiers {
+                let casted = modifier.downcast_ref::&lt;EventFunction&lt;T&gt;&gt;().unwrap();
+                (casted.f)(&event);
+            }
+        }
+    }
+}
+</code></pre>
+<p>
+This is just an outline of the basic principle and not very specific. You probably want to extend this system or mold it according to your own needs in your project.<br>
+I hope this was helpful to you and saved you some time trying to figure that out yourself. I also hope I was able to provide some insight into the way trait objects and casting between them works in Rust.
+</p>

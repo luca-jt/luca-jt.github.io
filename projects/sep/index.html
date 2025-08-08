@@ -1,0 +1,43 @@
+---
+layout: default
+title: SEP
+---
+
+<h1>Tilt Puzzle Game:<br>Software Development Project in University</h1>
+<p>
+<em>This article was written about a year after the actual project was finished. It is just a broad outline of some of the work I did.</em>
+</p>
+<p>
+During my second year in university I participated in a software development project at the Algorithms Division of the <a href="https://www.ibr.cs.tu-bs.de/?lang=en">Institute of Operating Systems and Computer Networks</a> at TU Braunschweig. Over the course of the semester we had to develop a complete project from scratch in a team of five people. Our project combined an algorithmic problem with some basic game development. This project was my first ever contact with graphics programming and fully fleshed native programs. I had made some small attmepts at something like this before, but it never went anywhere. Iwas responsible for the majority of the programming work and was the one with the most prior experience which inevitably meant I was the main coordinator of the project. At the time I just started learning Rust a month ago and I decided to make my learning curve even steeper by using it in this project. My coworkers had never used the language before which is why we decided to also use C++ for some minor parts of the project. This required coupling a CMake build with the Rust build system while using an FFI.
+</p>
+
+<h2>The Problem</h2>
+<p>
+The task given to us was based on a problem from motion planning. The playing field of the game is a grid board of arbitrary size. The goal is to find a sequence of moves - "tilts" of the board - to move one or mostly more squerical "particles" to some set of predefined final positions. Some instances of potential game boards might contain some obstacles that alter the movement of the particles. One input move always moves all particles as much as possible. Different surface types of the boards might also change the movement behavior of the particles. We were not only required to make this a game with a bunch of nice features, but also integrate an algorithm that can solve arbitrary instances of this problem effectively.
+</p>
+<p>
+If you are interested in this topic, this is a great place to start: <a href="https://ieeexplore.ieee.org/abstract/document/10341556">Computing Motion Plans for Assembling Particles with Global Control</a>
+</p>
+
+<h2>Features</h2>
+<p>
+The program broadly was composed of 3 different layers: one for managing stored data on disk, one for managing primitive game state logic and solving problem instances and one for rendering, animation and window management, which was the only one that was written in Rust, but was by far the largest one. That was the one I was responsible for. In reality the distribution of work on the different areas was a bit more nuanced than that, but it's a helpful simplification. Users were able to play through a set of given campaign levels that were designed by us to introduce the player to the mechanics of the game and provide a small single player experience. By beating these levels the players could earn some virtual currency that they could the use to buy different cosmetic skins in a shop to change the appearance of the particles. There was also an entire section to create custom levels using an editor. Newly created levels were automatically solved by our algorithm and the player could then use that solution if they didn't find a solution themselves. Custom levels could be shared with a seed that is unique to a level and that could also be used to create a new level in the editor. In the editor player were able to specify not only the start and end positions of the particles, but also the kind of tiles the board was made of. Walls could be placed to stop the particles from taking certain moves and sand tiles were stopping the particles from moving further in a direction, but still made it possible for them to move in another subsequent move.
+</p>
+
+<h2>Impressions</h2>
+<p>
+This is only a short showcase of the actual gameplay and no UI of the full program. I don't have any of that saved.<br>
+Unfortunately I am not able to share the full source of the project, but here are a few screenshots:
+</p>
+
+<img src="2d_board.png" alt="2D game board" width=48%>
+<img src="3d_board.png" alt="3D game board" width=48%>
+<img src="skins.png" alt="skins" width=20%>
+
+<h2>Implementation</h2>
+<p>
+We used ini files for storing user settings and came up with an encoding for levels that enabled users to easily share them with others. These "seeds" were just strings of symbols specifying the used tile types, the dimensions of the board and particle positions. The game state contained just the parsed version of such a string representation and tracked moves on the grid for handling resets. For solving levels, we used a compact representation of the state of a level and built a tree containing all the possible board configurations up to a certain move limit that was large enough such that any level created inside the editor was solvable. There were no duplicate nodes in the tree. We then performed a simple tree search on that data and that way we composed the solution as a sequence of moves. The algorithm always found the optimal solution. You might think: "Hey, that sounds really simple and unoptimized", but it turns out that for levels of a size in the range that was possible to create it was actually relatively difficult to create levels that were taking a really long time to solve (anything more than a second) - especially if you didn't try to create worst case instances where the node count skyrockets because a large map with a lot of sand tiles combined with a lot of particles allows for a ton of different particle configurations that are searched, even though they are actually completely useless to try. For the average level a user would create, the solve time was basically non-existent.
+</p>
+<p>
+I hope this gave a little insight. This whole project is not really anything special, but was a huge learning opportunity for me, because we did not use any kind of engine or similar and I used this to try out and learn a lot of new things and by that gain a lot of valuable experience.
+</p>

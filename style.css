@@ -1,0 +1,268 @@
+body {
+    padding: 0px;
+    background-color: #242628;
+    color: #FFFFFF;
+    font-size: 20px;
+    display: flex;
+    font-family: 'Iosevka Web';
+    line-height: 1.4;
+}
+
+.container {
+    display: flex;
+    height: 96vh;
+    width: 100vw;
+}
+
+/*------------------------------CONTENT---------------------------*/
+
+.content {
+    flex: 1;
+    padding-left: 50px;
+    padding-right: 50px;
+    font-family: 'Roboto Condensed';
+    font-weight: 300;
+    overflow-y: auto;
+}
+
+.content h1 {
+    font-size: 50px;
+    font-family: 'Iosevka Web';
+}
+
+.content h2 {
+    font-size: 40px;
+    margin-bottom: 0;
+    font-family: 'Iosevka Web';
+}
+
+.content h3 {
+    font-size: 30px;
+    margin-bottom: 0;
+    font-family: 'Iosevka Web';
+}
+
+.content hr {
+    border: none;
+    height: 1px;
+    background-color: #555555;
+}
+
+.content a {
+    color: #56A8F5;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+}
+
+.content a:hover {
+    color: #9dcaf3;
+}
+
+.content p {
+    text-align: justify;
+}
+
+.content em {
+    color: #FFFF70;
+    font-style: italic;
+}
+
+.content i {
+    color: #7A7E85;
+}
+
+.content pre {
+    background-color: #1F1F1F;
+    padding: 5px;
+    border-radius: 20px;
+    overflow-x: auto;
+    border: 1px solid #A0A0A0;
+}
+
+.content code {
+    display: block;
+    background-color: inherit;
+    font-family: 'Iosevka Web', monospace;
+    font-size: 20px;
+    line-height: 1.4;
+}
+
+/*----------------------------SIDE BAR-----------------------------*/
+
+.sidebar {
+    width: 300px;
+    height: 96vh;
+    padding: 10px;
+    border-right: 1px solid #CCCCCC;
+}
+
+.sidebar hr {
+    border: none;
+    height: 1px;
+    background-color: #CCCCCC;
+}
+
+.sidebar a {
+    display: block;
+    padding: 10px;
+    margin: 5px;
+    text-decoration: none;
+    border-radius: 20px;
+    transition: background 0.2s, color 0.2s;
+    color: #FFFFFF;
+    line-height: 1.2;
+}
+
+.sidebar a:hover {
+    background: #FFFFFF;
+    color: #000000;
+}
+
+.menu {
+    font-size: 34px;
+    line-height: 1.4;
+    font-weight: bold;
+}
+
+.articles {
+    font-size: 22px;
+    overflow-y: scroll;
+    height: 67vh;
+}
+
+.articles a {
+    margin: 20px;
+    margin-left: 5px;
+}
+
+.articles i {
+    color: #7A7E85;
+}
+
+/*----------------------------HOME PAGE-----------------------------*/
+
+.center {
+    text-align: center;
+}
+
+.center h1 {
+    font-size: 80px;
+}
+
+.footer {
+    color: #BCBEC4;
+    text-align: center;
+    font-size: 14px;
+    font-family: 'Iosevka Web';
+}
+
+/*----------------------------PROJECTS-----------------------------*/
+
+.projects {
+    font-family: 'Iosevka Web';
+    font-size: 24px;
+}
+
+.project {
+    display: flex;
+    justify-content: space-between;
+    padding-right: 100px;
+    text-decoration: none;
+}
+
+.entry {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.entry a {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    margin: 20px;
+    border-radius: 20px;
+    line-height: 1.2;
+    transition: background 0.2s, color 0.2s;
+    color: #FFFFFF;
+    width: 90%;
+}
+
+.entry a:hover {
+    background: #FFFFFF;
+    color: #000000;
+}
+
+.icon {
+    display: flex;
+    margin-right: 40px;
+    border-radius: 20px;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon img {
+    display: block;
+    aspect-ratio: 1 / 1;
+    width: auto;
+    height: 180px;
+    border-radius: 10px;
+    object-fit: fill;
+}
+
+.title {
+    flex: 1;
+    line-height: 1.2;
+}
+
+.title i {
+    color: #7A7E85;
+    font-size: 20px;
+}
+
+.repo {
+    display: block;
+    padding: 20px;
+    margin: 20px;
+    border-radius: 20px;
+    line-height: 1.2;
+}
+
+/*----------------------------PARAGRAPH-----------------------------*/
+
+.prose {
+    font-size: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.prose p {
+    white-space: pre-wrap;
+    text-align: justify;
+    text-align-last: justify;
+    width: 18%;
+}
+
+.articlebody {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.articlebody p {
+    white-space: pre-wrap;
+    text-align: justify;
+    text-align-last: justify;
+    width: 50%;
+}
+
+/*----------------------------GENERAL-----------------------------*/
+
+.pageimage {
+    text-align: center;
+}
+
+.pageimage img {
+    border-radius: 20px;
+}

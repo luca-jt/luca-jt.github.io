@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ page.title }}</title>
+
+<link rel="stylesheet" href="/style.css">
+<script>
+    window.MathJax = {
+        tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        },
+        svg: { fontCache: 'global' }
+    };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/rust.min.js"></script>
+<script>hljs.highlightAll();</script>
+
+<link rel="stylesheet" href="/fonts/iosevka-webfont/Iosevka.css">
+<link rel="stylesheet" href="/fonts/roboto-condensed/roboto_condensed.css">
+<link rel="shortcut icon" type="image/png" href="/favicon.png">
+
+</head>
+
+
+<body><div class="container">
+
+<div class="sidebar">
+
+<div class="menu">
+<a href="/">Home</a>
+<a href="/about">About</a>
+<a href="/projects">Projects</a>
+</div>
+<br>
+<hr>
+<br>
+<div class="articles">
+<a href="/articles/software-decline">On Software Development Culture and Project Management<br><i>04.03.2025</i></a>
+<a href="/articles/event-listener">Crafting dynamically dispatched Event Listeners in Rust<br><i>07.12.2024</i></a>
+</div>
+
+</div>
+
+<div class="content">
+{{ content }}
+</div>
+
+</div></body>
+
+</html>

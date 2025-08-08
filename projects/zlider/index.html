@@ -1,0 +1,101 @@
+---
+layout: default
+title: Zlider
+---
+
+<h1>Zlider: A Simple Slide Show Program</h1>
+<p>
+When I try to recall what conference talks or other presentations I still remember to this day for how good they were, and I try to idenfify what all the slide shows that were used had in common, it's always one thing:
+They didn't distract me from listening to the talk, but were also informative enough, such that, if I ever stopped listening for a minute or two, it was still relatively easy to get back into the matter. They were minimalistic in nature. That is exactly what I need, and I want it to be fast, minimal, easy to use and portable.
+</p>
+<p>
+I didn't know of any program like this out there, and so I decided to use that opportunity to start this project. Coincidentally, the time of me developing these ideas was also the time I was looking for little side project to learn a new programming language. I was looking at Zig for quite some time, but until that point I had not found the right job for the man. Fun fact: I first started this project in C and only later switched to Zig and translated my previous work into the new language. In the end, the majority of the code was written after that step though.
+</p>
+
+<h2>Design Approach</h2>
+<p>
+I didn't want to waste time on implementing a bunch of features that I actually don't really need - and, to be honest, most of the time when one wants to give a talk about something, they always keep a PDF version of the slide show for backup, in case the formatting is messed up again for some reason, as it is so often the case. The input file format needs to be simple enough for easy edits and distribution, but also flexible enough to be able to create slide shows the way you want them to be. The end result is a text file with a simple mark up language - no need for specific editor software.
+</p>
+
+<h2>Features</h2>
+<p>
+To load a slide show, you can either start the program from the terminal and pass the path to the file as a command line argument, or, once it's running, drag and drop a file into the window. Once you do that, the slide show file is tracked (noticable through the current window title) and every change to the slide show file re-parses the slide show and immediately displays the changes. Running the program from the command line has the advantage of access to specific error messages on a load error. If there is an error, unless you explicitely unload the slide show, the file is still tracked and, once you fix the error, the slide show will be displayed again at same place you left off. All of this allows for easy real-time editing and slide design.
+</p>
+<p>
+Even though the slides shows are meant to be displayed in the software, sometimes you still need them in some common file format. For that reason you can export the currently loaded slide show to both PDF and PNG's. The exported files will live in the same directory the slide show file is located in. I won't go into too much detail on how exactly the silde shows are built from the file and how the language works, I will only give you a quick impression in the following example.
+</p>
+
+<h2>A First Look</h2>
+<p>
+This is what a slide show file might look like. This is just a quick overview of some features and does by far not include all of them. If you are interested in all the things you can do, please take a look at the example slide show in the <a href="https://github.com/luca-jt/Zlider">Github repository</a>. It also contains a ton of additional in-depth explanations.
+</p>
+<pre class="rust"><code>// this is a comment
+aspect_ratio 3 2
+center
+bg 0x444444FF
+text_color 0xFFFFFFFF
+text_size 50
+font sans_serif
+no_footer
+no_header
+space 300
+text
+This is the title of some slide show.
+text
+space 200
+image a.png 0.5
+
+
+slide
+
+font monospace
+left
+text
+
+const std = @import("std");
+
+pub fn main() !void {
+    std.debug.print("Hamburger\n");
+}
+text
+space 110
+
+
+slide fallthrough
+
+center
+quad 0xFF0000FF 1100 240
+layer 3
+space 440
+text_size 45
+block
+left_space 300
+right_space 300
+text
+This is a really long text segment with block text formatting. A line with auto line breaks always fills the available width of the slide respecting the formatting.
+Manual line breaks will be rendered regularly.
+text
+
+
+header
+text_color 0xFFFFFFFF
+text
+This is a header.
+
+text
+
+footer
+right
+text
+
+This is a footer.
+text
+</code></pre>
+
+<p>
+Keep in mind these slides are extremely simple and therefore don't look the most exciting. The example file in the repository is a bit more interesting.<br>
+This slide show can be exported to the following slides (the image "a.png" was replaced by a built-in image for demonstration purposes):
+</p>
+
+<img src="slide1.png" alt="Zlider example slide 1" width=48%>
+<img src="slide2.png" alt="Zlider example slide 2" width=48%>
