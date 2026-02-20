@@ -5,7 +5,7 @@ title: SEP
 
 <h1>Tilt Puzzle Game:<br>Software Development Project in University</h1>
 <p>
-<em>This article was written about a year after the actual project was finished. It is just a broad outline of some of the work I did.</em>
+<em>This article was written about a year after the actual project was finished in early 2024. It is just a broad outline of some of the work I did.</em>
 </p>
 <p>
 During my second year in university I participated in a software development project at the Algorithms Division of the <a href="https://www.ibr.cs.tu-bs.de/?lang=en">Institute of Operating Systems and Computer Networks</a> at TU Braunschweig. Over the course of the semester we had to develop a complete project from scratch in a team of five people. Our project combined an algorithmic problem with some basic game development. This project was my first ever contact with graphics programming and fully fleshed native programs. I had made some small attmepts at something like this before, but it never went anywhere. Iwas responsible for the majority of the programming work and was the one with the most prior experience which inevitably meant I was the main coordinator of the project. At the time I just started learning Rust a month ago and I decided to make my learning curve even steeper by using it in this project. My coworkers had never used the language before which is why we decided to also use C++ for some minor parts of the project. This required coupling a CMake build with the Rust build system while using an FFI.
@@ -13,7 +13,7 @@ During my second year in university I participated in a software development pro
 
 <h2>The Problem</h2>
 <p>
-The task given to us was based on a problem from motion planning. The playing field of the game is a grid board of arbitrary size. The goal is to find a sequence of moves - "tilts" of the board - to move one or mostly more squerical "particles" to some set of predefined final positions. Some instances of potential game boards might contain some obstacles that alter the movement of the particles. One input move always moves all particles as much as possible. Different surface types of the boards might also change the movement behavior of the particles. We were not only required to make this a game with a bunch of nice features, but also integrate an algorithm that can solve arbitrary instances of this problem effectively.
+The task given to us was based on a problem from motion planning. The playing field of the game is a grid board of arbitrary size. The goal is to find a sequence of moves - "tilts" of the board - to move one or, most of the time, multiple spherical "particles" to some set of predefined final positions. Some instances of potential game boards might contain some obstacles that alter the movement of the particles. One input move always moves all particles as much as possible. Different surface types of the boards might also change the movement behavior of the particles. We were not only required to make this a game with a bunch of nice features, but also integrate an algorithm that can solve arbitrary instances of this problem effectively.
 </p>
 <p>
 If you are interested in this topic, this is a great place to start: <a href="https://ieeexplore.ieee.org/abstract/document/10341556">Computing Motion Plans for Assembling Particles with Global Control</a>

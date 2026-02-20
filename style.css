@@ -1,8 +1,8 @@
 body {
     padding: 0px;
-    background-color: #242628;
+    background-color: #1F292F;
     color: #FFFFFF;
-    font-size: 20px;
+    font-size: 18px;
     display: flex;
     font-family: 'Iosevka Web';
     line-height: 1.4;
@@ -20,32 +20,36 @@ body {
     flex: 1;
     padding-left: 50px;
     padding-right: 50px;
-    font-family: 'Roboto Condensed';
+    font-family: 'Iosevka Web';
     font-weight: 300;
     overflow-y: auto;
+    color: #FFFFFF;
 }
 
 .content h1 {
     font-size: 50px;
     font-family: 'Iosevka Web';
+    color: #FFFFFF;
 }
 
 .content h2 {
     font-size: 40px;
     margin-bottom: 0;
     font-family: 'Iosevka Web';
+    color: #FFFFFF;
 }
 
 .content h3 {
     font-size: 30px;
     margin-bottom: 0;
     font-family: 'Iosevka Web';
+    color: #FFFFFF;
 }
 
 .content hr {
     border: none;
     height: 1px;
-    background-color: #555555;
+    background-color: #FFFFFF;
 }
 
 .content a {
@@ -72,18 +76,20 @@ body {
 }
 
 .content pre {
-    background-color: #1F1F1F;
+    background-color: #062626;
     padding: 5px;
     border-radius: 20px;
     overflow-x: auto;
-    border: 1px solid #A0A0A0;
+    border: 1px solid #FFFFFF;
 }
 
 .content code {
     display: block;
     background-color: inherit;
     font-family: 'Iosevka Web', monospace;
+    color: #D3B58D;
     font-size: 20px;
+    font-weight: 400;
     line-height: 1.4;
 }
 
@@ -98,13 +104,13 @@ body {
     width: 300px;
     height: 96vh;
     padding: 10px;
-    border-right: 1px solid #CCCCCC;
+    border-right: 1px solid #FFFFFF;
 }
 
 .sidebar hr {
     border: none;
     height: 1px;
-    background-color: #CCCCCC;
+    background-color: #FFFFFF;
 }
 
 .sidebar a {
@@ -155,9 +161,9 @@ body {
 }
 
 .footer {
-    color: #BCBEC4;
+    color: #FFFFFF;
     text-align: center;
-    font-size: 14px;
+    font-size: 16px;
     font-family: 'Iosevka Web';
 }
 
@@ -173,6 +179,7 @@ body {
     justify-content: space-between;
     padding-right: 100px;
     text-decoration: none;
+    font-weight: 400;
 }
 
 .entry {
@@ -236,7 +243,7 @@ body {
 /*----------------------------PARAGRAPH-----------------------------*/
 
 .prose {
-    font-size: 16px;
+    font-size: 12px;
     color: #7A7E85;
     display: flex;
     justify-content: center;
